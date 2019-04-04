@@ -369,19 +369,20 @@ public class IMPFixer {
             long warningCount = errorsAndWarnings.stream().filter(e -> e.getErrorLevel().equals(IMFErrorLogger.IMFErrors.ErrorLevels.WARNING)).count();
             long nonFatalCount = errorsAndWarnings.stream().filter(e -> e.getErrorLevel().equals(IMFErrorLogger.IMFErrors.ErrorLevels.NON_FATAL)).count();
 
-            if (nonFatalCount > 0) {
-                logger.info("IMPWriter encountered non-fatal issues:");
-                errorsAndWarnings.stream().filter(e -> e.getErrorLevel().equals(IMFErrorLogger.IMFErrors.ErrorLevels.NON_FATAL)).forEach(er -> logger.warn(er.toString()));
-            }
-
             if (warningCount > 0) {
-                logger.info("IMPWriter encountered warnings:");
+                logger.warn("IMPWriter encountered warnings:");
                 errorsAndWarnings.stream().filter(e -> e.getErrorLevel().equals(IMFErrorLogger.IMFErrors.ErrorLevels.WARNING)).forEach(er -> logger.warn(er.toString()));
             }
 
-            if (errorCount > 0) {
-                logger.info("IMPWriter encountered errors:");
-                errorsAndWarnings.stream().filter(e -> e.getErrorLevel().equals(IMFErrorLogger.IMFErrors.ErrorLevels.FATAL)).forEach(er -> logger.error(er.toString()));
+            if (errorCount > 0 || nonFatalCount > 0) {
+                if (errorCount > 0) {
+                    logger.error("IMPWriter encountered errors:");
+                    errorsAndWarnings.stream().filter(e -> e.getErrorLevel().equals(IMFErrorLogger.IMFErrors.ErrorLevels.FATAL)).forEach(er -> logger.error(er.toString()));
+                }
+                if (nonFatalCount > 0) {
+                    logger.error("IMPWriter encountered non-fatal issues:");
+                    errorsAndWarnings.stream().filter(e -> e.getErrorLevel().equals(IMFErrorLogger.IMFErrors.ErrorLevels.NON_FATAL)).forEach(er -> logger.error(er.toString()));
+                }
                 System.exit(-1);
             }
         }
